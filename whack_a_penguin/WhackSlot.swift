@@ -11,9 +11,11 @@ import UIKit
 
 class WhackSlot: SKNode {
     var charNode: SKSpriteNode!
+    //Makes sure penguin is showing and hasn't been hit.
     var isVisible = false
     var isHit = false
     
+    //Creates a hole + mask + penguin object.
     func configure(at position: CGPoint) {
         self.position = position
         
@@ -21,6 +23,7 @@ class WhackSlot: SKNode {
         
         addChild(sprite)
         
+        //CropNode uses an alpha mask to hide the penguin on the stage. So we don't have to spawn penguins each time, just change y axis.
         let cropNode = SKCropNode()
         cropNode.position = CGPoint(x: 0, y: 15)
         cropNode.zPosition = 1
@@ -39,10 +42,12 @@ class WhackSlot: SKNode {
         charNode.xScale = 1
         charNode.yScale = 1
         
+        //Moves penguin up 80 pixels to appear past the mask.
         charNode.run(SKAction.moveBy(x: 0, y: 80, duration: 0.05))
         isVisible = true
         isHit = false
         
+        //Randomly assigns the penguins as either blue or red.
         if RandomInt(min: 0, max: 2) == 0 {
             charNode.texture = SKTexture(imageNamed: "penguinGood")
             charNode.name = "charFriend"
@@ -51,12 +56,14 @@ class WhackSlot: SKNode {
             charNode.name = "charEnemy"
         }
         
+        //Hides the penguin if it hasn't been tapped.
         DispatchQueue.main.asyncAfter(deadline: .now() +  (hideTime * 3.5)) {
             [unowned self] in
             self.hide()
         }
     }
     
+    //Lowers the penguins behind the cropNode.
     func hide() {
         if !isVisible { return }
         
@@ -64,6 +71,7 @@ class WhackSlot: SKNode {
         isVisible = false
     }
     
+    //When a penguin is hit, delays actions for 0.25 seconds, lowers penguin, sets hole to have no penguin visible.
     func hit() {
         isHit = true
         
